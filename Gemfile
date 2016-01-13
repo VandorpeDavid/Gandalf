@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 4.0'
+gem 'rails', '~> 4.2'
 
 # We <3 New Relic
 gem 'newrelic_rpm'
@@ -39,15 +39,8 @@ gem 'simple_form'
 # Datagrid is nice
 gem 'datagrid'
 
-group :doc do
-  # bundle exec rake doc:rails generates the API under doc/api.
-  gem 'sdoc', require: false
-end
-
-group :test do
-  gem 'capybara'
-  gem 'poltergeist'
-end
+# Wicked gem
+gem 'wicked'
 
 # Let's use devise for users
 gem 'devise'
@@ -58,8 +51,8 @@ gem 'omniauth-oauth2'
 # Token authentication for partners
 gem 'simple_token_authentication'
 
-# CanCan is used for authorization
-gem 'cancan'
+# CanCanCan is used for authorization
+gem 'cancancan', '~> 1.9'
 gem 'httparty'
 
 # Logging is awesome, and paper_trail even more
@@ -67,10 +60,6 @@ gem 'paper_trail', '~> 4.0.0.beta'
 
 # Njam njam, IBAN
 gem 'iban-tools'
-
-group :production, :deployment do
-  gem 'puma'
-end
 
 # Barcodes
 gem 'barcodes', git: "git://github.com/nudded/barcodes"
@@ -91,17 +80,14 @@ gem 'spreadsheet'
 
 # Run stuff in the background
 gem 'daemons'
-gem 'delayed_job', '~> 4.0'
+gem 'delayed_job', '~> 4.0.6'
 gem 'delayed_job_active_record'
-#
 
 # Whenever cronjobs
 gem 'whenever', require: false
 
 # Coveralls
 gem 'coveralls', require: false
-
-# Deployment
 
 # Stubbing http requests
 gem 'webmock', require: false
@@ -129,16 +115,41 @@ gem 'twitter-typeahead-rails'
 gem 'simple_enum'
 
 group :development do
+  # SQL schemes
   gem 'rails-erd'
 
+  # Static code analysis
+  gem 'rubocop', github: 'bbatsov/rubocop'
+
+  # Deployment goodies
   gem 'capistrano', '~> 3.1'
   gem 'capistrano-rails', '~> 1.1'
   gem 'capistrano-rvm'
   gem 'capistrano-rbenv'
+  gem 'capistrano-passenger'
+
+  gem 'web-console', '~> 2.0'
+end
+
+group :test do
+  gem 'capybara'
+  gem 'poltergeist'
+  gem 'single_test'
+  gem 'database_cleaner'
 end
 
 group :development, :test do
+  gem 'faker'
+  gem 'factory_girl_rails'
+
+  # Debugging goodies
   gem 'pry-byebug'
+  gem 'pry-rails'
+end
+
+group :doc do
+  # bundle exec rake doc:rails generates the API under doc/api.
+  gem 'sdoc', require: false
 end
 
 group :production do

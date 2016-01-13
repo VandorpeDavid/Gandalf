@@ -19,13 +19,11 @@
 class AccessLevel < ActiveRecord::Base
   belongs_to :event
 
-  has_many :included_zones, dependent: :destroy
-  has_many :zones, through: :included_zones
+  has_many :tickets
 
-  has_many :accesses, dependent: :destroy
-  has_many :registrations, through: :accesses
+  attr_accessor :amount
+
   has_many :partners
-
   has_and_belongs_to_many :promos
 
   validates :name, presence: true
@@ -33,12 +31,12 @@ class AccessLevel < ActiveRecord::Base
   validates :capacity, numericality: { allow_nil: true, only_integer: true, greater_than: 0 }
 
   validate do |access_level|
-    if access_level.price > 0 and access_level.event.bank_number.blank?
-      access_level.errors.add :event_id, "has no bank number."
+    if access_level.price > 0 && access_level.event.bank_number.blank?
+      access_level.errors.add :event_id, 'has no bank number.'
     end
   end
 
-  default_scope { order "price, name" }
+  default_scope { order 'price, name' }
   scope :public?, -> { where(public: true) }
 
   as_enum :permit, %w(everyone students enrolled members), prefix: true, source: :permit, map: :string
@@ -47,30 +45,33 @@ class AccessLevel < ActiveRecord::Base
     not(permit_everyone?)
   end
 
-  def set_zones_by_ids zones
-    self.zones = self.event.zones.find zones
-    self.save
+  def set_zones_by_ids(zones)
+    self.zones = event.zones.find zones
+    save
   end
 
   def name_with_price
     if price > 0
       "#{name} - €#{'%0.2f' % price}"
     else
-       name
+      name
     end
   end
 
   def tickets_left
-    capacity - registrations.count if capacity.presence
+    capacity - tickets.active.count if capacity.presence
   end
 
   def price
-    (read_attribute(:price) || 0) / 100.0
+    (self[:price] || 0) / 100.0
   end
 
   def price=(value)
-    if value.is_a? String then value.sub!(',', '.') end
-    write_attribute(:price, (value.to_f * 100).to_int)
+    value.sub!(',', '.') if value.is_a? String
+    self[:price] = (value.to_f * 100).to_int
   end
 
+  def toggle_visibility
+    self.toggle!(:hidden)
+  end
 end

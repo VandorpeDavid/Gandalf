@@ -6,19 +6,19 @@
 
     <%= render partial: 'flash' %>
 
-    <% if @registration %>
+    <% if @ticket %>
     <h4>Ticket information:</h4>
       <div class="row">
         <div class="col-sm-6">
           <table class="table">
-            <tr><th>Name:</th><td><%= @registration.name %></td></tr>
-            <tr><th>E-mail:</th><td><%= @registration.email %></td></tr>
-            <tr><th>Student number:</th><td> <%= @registration.student_number %></td></tr>
-            <tr><th>Registered at:</th><td><%= nice_time @registration.created_at %></td></tr>
-            <tr><th>Barcode:</th><td><%= @registration.barcode %></td></tr>
-            <tr><th>Ticket:</th><td> <%= @registration.access_levels[0].name %></td></tr>
-            <% unless @registration.comment.blank? %>
-              <tr><th>Comment:</th><td> <%= @registration.comment %></td></tr>
+            <tr><th>Name:</th><td><%= @ticket.name %></td></tr>
+            <tr><th>E-mail:</th><td><%= @ticket.email %></td></tr>
+            <tr><th>Student number:</th><td> <%= @ticket.student_number %></td></tr>
+            <tr><th>Registered at:</th><td><%= nice_time @ticket.created_at %></td></tr>
+            <tr><th>Barcode:</th><td><%= @ticket.barcode %></td></tr>
+            <tr><th>Ticket:</th><td> <%= @ticket.access_level.name %></td></tr>
+            <% unless @ticket.comment.blank? %>
+              <tr><th>Comment:</th><td> <%= @ticket.comment %></td></tr>
             <% end %>
           </table>
         </div>
@@ -65,14 +65,14 @@
 </div>
 
 <script>
-var json = '<%= list_registrations_event_path %>';
-var registrations = new Bloodhound({
+var json = '<%= list_tickets_event_path %>';
+var tickets = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name', 'email'),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
-    prefetch: '<%= list_registrations_event_path %>'
+    prefetch: '<%= list_tickets_event_path %>'
 });
 
-registrations.initialize();
+tickets.initialize();
 
 $('#name').typeahead(
     {
@@ -81,19 +81,19 @@ $('#name').typeahead(
         minLength: 1
     },
     {
-        name: 'registrations',
+        name: 'tickets',
         displayKey: 'name',
-        source: registrations.ttAdapter(),
+        source: tickets.ttAdapter(),
         templates: {
-            suggestion: function(registration) {
+            suggestion: function(ticket) {
                 var container = $('<div/>');
                 var name = $('<span/>', {
                     class: "typeahead-scan-name",
-                    text: registration.name
+                    text: ticket.name
                 });
                 var email = $('<span/>', {
                     class: "typeahead-scan-email",
-                    text: registration.email
+                    text: ticket.email
                 })
                 return container.append(name).append(email);
             }

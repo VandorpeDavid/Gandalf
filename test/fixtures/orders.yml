@@ -1,0 +1,110 @@
+# == Schema Information
+#
+# Table name: orders
+#
+#  id           :integer          not null, primary key
+#  status       :string           default("initial")
+#  name         :string
+#  email        :string
+#  gsm          :string
+#  ticket_id    :integer
+#  event_id     :integer
+#  paid         :integer
+#  price        :integer
+#  created_at   :datetime
+#  updated_at   :datetime
+#  payment_code :string
+#
+
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: Tom Naessens
+  email: supermail@gmail.com
+  event: codenight
+  paid: 0
+  price: 0
+  status: initial
+  payment_code: <%= Order.create_payment_code %>
+
+two:
+  name: Maarten Herthoge
+  email: fakemail@gmail.com
+  event: galabal
+  paid: 5
+  price: 10
+  status: initial
+  payment_code: <%= Order.create_payment_code %>
+
+three:
+  name: Felix Van der Jeugt
+  email: felix.vanderjeblarghugt@gmail.com
+  event: codenight
+  paid: 0
+  price: 20
+  status: initial
+  payment_code: GAN7539840256920891
+
+four:
+  name: Felix Van der Jeugd
+  email: felix.vanderjeugd@gmail.com
+  event: codenight
+  paid: 5
+  price: 10
+  status: initial
+  payment_code: <%= Order.create_payment_code %>
+
+free:
+  name: Free
+  email: free@email.com
+  event: codenight
+  paid: 0
+  price: 0
+  status: active
+  payment_code: <%= Order.create_payment_code %>
+
+not_free_not_paid:
+  name: Not Free Not Paid
+  email: an@email.com
+  event: codenight
+  paid: 0
+  price: 20
+  status: active
+  payment_code: <%= Order.create_payment_code %>
+
+not_free_not_paid_galabal:
+  name: Not Free Not Paid Gablabal
+  email: an@email.comgala
+  event: galabal
+  paid: 0
+  price: 20
+  status: active
+  payment_code: <%= Order.create_payment_code %>
+
+not_free_partially_paid:
+  name: Not Free Partially Paid
+  email: another@email.com
+  event: codenight
+  paid: 5
+  price: 10
+  status: initial
+  payment_code: <%= Order.create_payment_code %>
+
+# Ticket validation tests
+ticket_validation_active:
+  name: Ticket Validation Order
+  email: ticket@validation.com
+  event: codenight
+  paid: 0
+  price: 0
+  status: active
+  payment_code: <%= Order.create_payment_code %>
+
+ticket_validation_add_ticket_info:
+  name: Ticket Validation Order
+  email: ticket@validation.com
+  event: codenight
+  paid: 0
+  price: 0
+  status: add_ticket_info
+  payment_code: <%= Order.create_payment_code %>

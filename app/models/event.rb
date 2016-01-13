@@ -28,16 +28,13 @@
 #
 
 class Event < ActiveRecord::Base
-
   belongs_to :club
 
   has_many :access_levels, dependent: :destroy
   has_many :partners, dependent: :destroy
-  has_many :zones, dependent: :destroy
-  has_many :registrations, dependent: :destroy
+  has_many :tickets, through: :orders
+  has_many :orders, dependent: :destroy
   has_many :promos, dependent: :destroy
-
-  has_many :periods, dependent: :destroy
 
   validates :description, presence: true
   validates :end_date, presence: true
@@ -50,32 +47,31 @@ class Event < ActiveRecord::Base
   validates :contact_email, email: true
   validates_with IBANValidator
 
-
   validates_datetime :end_date, after: :start_date
   validates_datetime :registration_close_date, after: :registration_open_date,
-    unless: lambda { |o| o.registration_close_date.blank? or o.registration_open_date.blank? }
+                                               unless: ->(o) { o.registration_close_date.blank? || o.registration_open_date.blank? }
 
   has_attached_file :export
-  validates_attachment_file_name :export, :matches => /.*/
-  validates_attachment_content_type :export, :content_type => /.*/
+  validates_attachment_file_name :export, matches: /.*/
+  validates_attachment_content_type :export, content_type: /.*/
 
   before_save :prettify_bank_number
 
   def prettify_bank_number
-    self.bank_number = IBANTools::IBAN.new(self.bank_number).prettify if bank_number_changed?
+    self.bank_number = IBANTools::IBAN.new(bank_number).prettify if bank_number_changed?
   end
 
   def generate_xls
     self.export_status = 'generating'
-    self.save
+    save
     xls = Spreadsheet::Workbook.new
     sheet = xls.create_worksheet
 
-    sheet.update_row 0, "Naam", "Email", "Studentnummer", "Ticket", "Comment", "Te betalen"
-    registrations.each.with_index do |reg, i|
-      sheet.update_row i + 1, reg.name, reg.email, reg.student_number, reg.access_levels.first.name, reg.comment, reg.to_pay
+    sheet.update_row 0, 'Naam', 'Email', 'Studentnummer', 'Ticket', 'Comment', 'Te betalen'
+    tickets.each.with_index do |ticket, i|
+      sheet.update_row i + 1, ticket.name, ticket.email, ticket.student_number, ticket.access_level.name, ticket.comment, ticket.order.to_pay
     end
-    data = Tempfile.new(["export", ".xls"])
+    data = Tempfile.new(['export', '.xls'])
 
     xls.write(data)
 
@@ -87,7 +83,7 @@ class Event < ActiveRecord::Base
   handle_asynchronously :generate_xls
 
   def toggle_registration_open
-    self.registration_open = !self.registration_open
-    self.save
+    self.registration_open = !registration_open
+    save
   end
 end

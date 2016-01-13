@@ -14,7 +14,7 @@ Isengard::Application.configure do
 
   # Configure static asset server for tests with Cache-Control for performance.
   config.serve_static_files  = true
-  config.static_cache_control = "public, max-age=3600"
+  config.static_cache_control = 'public, max-age=3600'
 
   # Show full error reports and disable caching.
   config.consider_all_requests_local       = true
@@ -34,6 +34,7 @@ Isengard::Application.configure do
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 
+  # Randomize test order
   config.active_support.test_order = :random
 
   config.active_record.raise_in_transactional_callbacks = true

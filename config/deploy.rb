@@ -12,7 +12,7 @@ set :branch, 'master'
 set :deploy_to, '/home/gandalf/production'
 
 # Default value for :linked_files is []
-set :linked_files, %w{config/database.yml config/secrets.yml}
+set :linked_files, %w(config/database.yml config/secrets.yml)
 
 # Default value for linked_dirs is []
 set :linked_dirs, %w{log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system}
@@ -25,8 +25,9 @@ set :log_level, :debug
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 
-namespace :deploy do
+set :passenger_restart_with_touch, true
 
+namespace :deploy do
   desc 'Restart application'
   task :restart do
     on roles(:app) do
@@ -38,5 +39,4 @@ namespace :deploy do
   end
 
   after :publishing, :restart
-
 end

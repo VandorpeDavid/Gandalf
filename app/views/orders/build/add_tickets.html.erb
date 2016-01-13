@@ -1,0 +1,33 @@
+<%= render partial: "events/tabs" %>
+
+<div class="row">
+  <div class="col-sm-8">
+    <h3>Pick your tickets</h3>
+
+    <%= form_errors @order %>
+    <%= render partial: 'flash' %>
+
+    <%= form_for [@event, @order], url: wizard_path do |f| %>
+      <%= fields_for :access_levels do |af| %>
+        <% @access_levels.chunk(&:permit).each do |permit, c| %>
+          <h4>Tickets for <%= permit %>.</h4>
+          <table class="table table-hover">
+            <thead>
+              <th>Name</th>
+              <th>Tickets left</th>
+              <th>Price</th>
+              <th>Amount</th>
+            </thead>
+            <tbody>
+              <%= render partial: "access_level", collection: c, locals: {af: af, order: @order} %>
+            <tbody>
+          </table>
+        <% end %>
+      <% end %>
+      <ul class="pager">
+        <li class="previous disabled"><a href='#'>&larr; Previous</a></li>
+        <li class="next"><%= link_to raw('Place your order &rarr;'), '#', onclick: "$(this).closest('form').submit()" %></li>
+      </ul>
+    <% end %>
+  </div>
+</div>

@@ -6,12 +6,12 @@ class Ability
     entity ||= User.new
 
     # Aliases
-    alias_action :new, :create, :read, :update, :destroy, :to => :crud
+    alias_action :new, :create, :read, :update, :destroy, to: :crud
 
     # Delegate with user precedence
-    if entity.kind_of? User
+    if entity.is_a? User
       user_rules(entity)
-    elsif entity.kind_of? Partner
+    elsif entity.is_a? Partner
       partner_rules(entity)
     end
   end
@@ -29,7 +29,7 @@ class Ability
     if !clubs.blank?
       can :create, Event
       can :show, Event
-      can :crud, Event, ["? IN (?)", :club_id, clubs.pluck(:id)] do |e|
+      can :crud, Event, ['? IN (?)', :club_id, clubs.pluck(:id)] do |e|
         clubs.include? e.club
       end
     else
@@ -39,7 +39,8 @@ class Ability
     # Admins can do anything!
     if user.admin?
       can :manage, Event
-      can :manage, Registration
+      can :manage, Ticket
+      can :manage, Order
       can :manage, Partner
     end
 
@@ -54,6 +55,18 @@ class Ability
       else
         true
       end
+    end
+
+    can :show, AccessLevel do |access_level|
+      # not if you can't register for the event
+      next false unless can? :register, access_level.event
+
+      next false if access_level.hidden
+
+      # don't support private tickets for the moment
+      next false unless access_level.public
+
+      true
     end
 
     # can you register for an access level
@@ -75,15 +88,19 @@ class Ability
       access_level.public
     end
 
-    # add modify registrations permission for club members
-    can :update, Registration do |registration|
-      clubs.include? registration.event.club
+    # add modify tickets permission for club members
+    can :update, Ticket do |ticket|
+      clubs.include? ticket.event.club
+    end
+
+    # add modify tickets permission for club members
+    can :update, Order do |order|
+      clubs.include? order.event.club
     end
 
     # can view statistics?
     can :view_stats, Event do |event|
-      clubs.include? event.club or event.show_statistics
+      clubs.include?(event.club) || event.show_statistics
     end
   end
-
 end

@@ -27,28 +27,3 @@
 # below each fixture, per the syntax in the comments below
 #
 #
-
-tom:
-  username: tnnaesse
-  cas_ugentStudentID: 00800857
-  clubs:
-    - zeus
-
-maarten:
-  username: mherthog
-  clubs:
-    - fk
-
-toon:
-  username: tvwillem
-
-matthias:
-  username: mjhertho
-  enrolled_clubs:
-    - zeus
-
-adminfelix:
-  username: noctua
-  clubs:
-    -zeus
-  admin: 1
